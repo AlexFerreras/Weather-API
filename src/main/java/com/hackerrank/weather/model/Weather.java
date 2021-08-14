@@ -1,17 +1,19 @@
 package com.hackerrank.weather.model;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+@Entity
 public class Weather {
-    private Integer id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id ;
     private Date date;
-
     private Float lat;
     private Float lon;
     private String city;
     private String state;
-
+    @ElementCollection
     private List<Double> temperatures;
 
     public Weather(Integer id, Date date, Float lat, Float lon, String city, String state, List<Double> temperatures) {
