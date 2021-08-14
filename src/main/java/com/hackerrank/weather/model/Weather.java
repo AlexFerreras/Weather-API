@@ -1,5 +1,7 @@
 package com.hackerrank.weather.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 public class Weather {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
     private Date date;
     private Float lat;
     private Float lon;
