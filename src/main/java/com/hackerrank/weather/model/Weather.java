@@ -1,5 +1,6 @@
 package com.hackerrank.weather.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.List;
 public class Weather {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
-    @DateTimeFormat(pattern = "YYYY-MM-DD")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "America/Dominica")
     private Date date;
     private Float lat;
     private Float lon;
