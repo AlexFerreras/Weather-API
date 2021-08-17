@@ -2,6 +2,7 @@ package com.hackerrank.weather.controller;
 
 import com.hackerrank.weather.model.Weather;
 import com.hackerrank.weather.repository.WeatherRepository;
+import com.hackerrank.weather.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/weather")
@@ -20,10 +18,12 @@ public class WeatherApiRestController {
 
 
     private final WeatherRepository weatherRepository;
+    private final WeatherService weatherService;
 
     @Autowired
-    public WeatherApiRestController(WeatherRepository weatherRepository) {
+    public WeatherApiRestController(WeatherRepository weatherRepository, WeatherService weatherService) {
         this.weatherRepository = weatherRepository;
+        this.weatherService = weatherService;
     }
 
     /**
@@ -51,34 +51,10 @@ public class WeatherApiRestController {
                                                  @RequestParam(name = "city",required = false) Optional<List<String>> city,
                                                  @RequestParam(name = "sort", required = false) Optional<String> sort) {
 
-        List<Weather> sorterWeatherList = weatherRepository.findAll();
-        sorterWeatherList.sort(Comparator.comparing(Weather::getId));
+        List<Weather> filteredWeatherList = weatherService
+                .getFilteredWeatherList(date, city, sort);
 
-        if (date.isPresent()){
-            sorterWeatherList = sorterWeatherList.stream()
-                    .filter(weather -> weather.getDate().compareTo(date.get()) == 0)
-                    .collect(Collectors.toList());
-        }
-
-        if (city.isPresent()){
-            sorterWeatherList = sorterWeatherList.stream()
-                    .filter(weather -> city.get().stream()
-                            .anyMatch(weather.getCity()::equalsIgnoreCase))
-                    .collect(Collectors.toList());
-        }
-
-        if(sort.isPresent()){
-            if(sort.get().equals("date")){
-                sorterWeatherList.sort(Comparator.comparing(Weather::getDate));
-            }
-
-            if(sort.get().equals("-date")){
-                sorterWeatherList.sort(Comparator.comparing(Weather::getDate).reversed());
-            }
-        }
-
-
-        return new ResponseEntity<>(sorterWeatherList, HttpStatus.OK);
+        return new ResponseEntity<>(filteredWeatherList, HttpStatus.OK);
     }
 
     /**
