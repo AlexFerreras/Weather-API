@@ -74,32 +74,4 @@ public class WeatherApiRestController {
     }
 
 
-    /**
-     * GET request to /repos/{repoId}/events:
-     *
-     * returns a collection of events related to the given repository
-     * the response code is 200, and the response body is an array of events related to the given repository ordered by their ids in increasing order
-
-     * GET request to /events/{eventId}:
-     * returns an event with the given id
-     * if the matching event exists, the response code is 200 and the response body is the matching event object
-     * if there is no event in the collection with the given id, the response code is 404
-     *
-     *
-     * GET request to all endpoints that return a collection of objects (/repos/{repoId}/events ,/users/{userId}/events, /events)
-     *
-     * takes the optional parameter public, which is used to filter the returned objects, e.g.:
-     */
-
-    @GetMapping("/events/{eventId}")
-    ResponseEntity<?> getEventById(@PathVariable int eventId) {
-
-        Optional<Weather> weather = weatherRepository.findById(eventId);
-        if(!weather.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(weather);
-    }
-
-
 }
