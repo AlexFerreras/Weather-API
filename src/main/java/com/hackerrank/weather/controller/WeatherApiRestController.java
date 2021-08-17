@@ -54,10 +54,6 @@ public class WeatherApiRestController {
         List<Weather> sorterWeatherList = weatherRepository.findAll();
         sorterWeatherList.sort(Comparator.comparing(Weather::getId));
 
-
-
-
-
         if (date.isPresent()){
             sorterWeatherList = sorterWeatherList.stream()
                     .filter(weather -> weather.getDate().compareTo(date.get()) == 0)
