@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -58,7 +58,7 @@ public class WeatherApiRestControllerTest {
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), Weather.class);
 
         Assert.assertTrue(new ReflectionEquals(expectedRecord, "id").matches(actualRecord));
-        assertEquals(true, weatherRepository.findById(actualRecord.getId()).isPresent());
+        assertTrue(weatherRepository.findById(actualRecord.getId()).isPresent());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class WeatherApiRestControllerTest {
                     .andDo(print())
                     .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), Weather.class));
         }
-        Collections.sort(expectedRecords, Comparator.comparing(Weather::getId));
+        expectedRecords.sort(Comparator.comparing(Weather::getId));
 
         List<Weather> actualRecords = om.readValue(mockMvc.perform(get("/weather"))
                 .andDo(print())
@@ -135,7 +135,7 @@ public class WeatherApiRestControllerTest {
         }
 
         //test single
-        List<Weather> expectedRecords = originalResponse.stream().filter(r -> r.getCity().toLowerCase().equals("moscow")).collect(Collectors.toList());
+        List<Weather> expectedRecords = originalResponse.stream().filter(r -> r.getCity().equalsIgnoreCase("moscow")).collect(Collectors.toList());
         List<Weather> actualRecords = om.readValue(mockMvc.perform(get("/weather?city=moscow"))
                 .andDo(print())
                 .andExpect(jsonPath("$.*", isA(ArrayList.class)))
@@ -180,7 +180,7 @@ public class WeatherApiRestControllerTest {
                     .andDo(print())
                     .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), Weather.class));
         }
-        Collections.sort(expectedRecords, Comparator.comparing(Weather::getDate).thenComparing(Weather::getId));
+        expectedRecords.sort(Comparator.comparing(Weather::getDate).thenComparing(Weather::getId));
 
         List<Weather> actualRecords = om.readValue(mockMvc.perform(get("/weather?sort=date"))
                 .andDo(print())
@@ -193,7 +193,7 @@ public class WeatherApiRestControllerTest {
             Assert.assertTrue(new ReflectionEquals(expectedRecords.get(i)).matches(actualRecords.get(i)));
         }
 
-        Collections.sort(expectedRecords, Comparator.comparing(Weather::getDate, Comparator.reverseOrder()).thenComparing(Weather::getId));
+        expectedRecords.sort(Comparator.comparing(Weather::getDate, Comparator.reverseOrder()).thenComparing(Weather::getId));
 
         actualRecords = om.readValue(mockMvc.perform(get("/weather?sort=-date"))
                 .andDo(print())
