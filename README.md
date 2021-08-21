@@ -20,8 +20,8 @@ Example of a weather data JSON object:
 }
 ```
 
-## Requirements:
-The `REST` service must expose the `/weather` endpoint, which allows for managing the collection of weather records in the following way:
+## Specifications:
+The `REST` service expose the `/weather` endpoint, which allows for managing the collection of weather records in the following way:
 
 
 POST request to `/weather`:
