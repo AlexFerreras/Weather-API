@@ -5,10 +5,7 @@ import com.hackerrank.weather.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,22 +20,20 @@ public class WeatherService {
     public List<Weather> getFilteredWeatherList( Optional<Date> date, Optional<List<String>> cities,
                                                  Optional<String> sort){
 
-        List<Weather> sortedWeatherList = weatherRepository.findAll();
-        sortedWeatherList.sort(Comparator.comparing(Weather::getId));
+        List<Weather> WeatherList = date.isPresent() ? weatherRepository.getAllByDate(date.get()) : weatherRepository.findAll();
 
-        if (date.isPresent()){
-            sortedWeatherList = getFilterWeatherListByDate(date.get(), sortedWeatherList);
+         if(cities.isPresent()) {
+            WeatherList = getFilterWeatherListByCity(cities.get(), WeatherList);
         }
 
-        if (cities.isPresent()){
-            sortedWeatherList = getFilterWeatherListByCity(cities.get(), sortedWeatherList);
+        if(!sort.isPresent()){
+            //sorting List by id.
+            WeatherList.sort(Comparator.comparing(Weather::getId));
+        }else{
+            sortedWeatherListByDate(sort.get(), WeatherList);
         }
 
-        if(sort.isPresent()){
-            sortedWeatherListByDate(sort.get(), sortedWeatherList);
-        }
-
-        return sortedWeatherList;
+        return WeatherList;
     }
 
     private void sortedWeatherListByDate(String sort, List<Weather> sortedWeatherList) {
@@ -55,12 +50,6 @@ public class WeatherService {
         return sortedWeatherList.stream()
                 .filter(weather -> cityList.stream()
                         .anyMatch(weather.getCity()::equalsIgnoreCase))
-                .collect(Collectors.toList());
-    }
-
-    private List<Weather> getFilterWeatherListByDate(Date date, List<Weather> sortedWeatherList) {
-        return sortedWeatherList.stream()
-                .filter(weather -> weather.getDate().compareTo(date) == 0)
                 .collect(Collectors.toList());
     }
 }
